@@ -35,7 +35,8 @@
                 HorizontalOptions="Fill" />
 
             <mystuff:CircleLayout
-                Buttons="{Binding Buttons}">
+                Buttons="{Binding Buttons}"
+                ButtonClickedCommand="{Binding ButtonClickedCommand}">
 
             </mystuff:CircleLayout>
         </VerticalStackLayout>

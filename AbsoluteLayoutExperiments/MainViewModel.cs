@@ -50,5 +50,13 @@ namespace AbsoluteLayoutExperiments
             }
         }
 
+        [RelayCommand]
+        void OnChangeButtonColorsClicked()
+        {
+            foreach (var button in Buttons)
+            {
+                button.BackgroundColor = Colors.Orange;
+            }
+        }
     }
 }

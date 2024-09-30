@@ -33,6 +33,11 @@
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Fill" />
+            
+            <Button
+                Text="Change Colors" 
+                Command="{Binding ChangeButtonColorsClickedCommand}"
+                HorizontalOptions="Fill" />
 
             <mystuff:CircleLayout
                 Buttons="{Binding Buttons}"

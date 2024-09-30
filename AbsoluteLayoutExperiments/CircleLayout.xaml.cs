@@ -5,7 +5,6 @@ namespace AbsoluteLayoutExperiments;
 
 public partial class CircleLayout : AbsoluteLayout
 {
-
     public static readonly BindableProperty ButtonsProperty =
     BindableProperty.Create(nameof(Buttons), typeof(ObservableCollection<Button>), typeof(Button), new ObservableCollection<Button>(){new Button(), new Button(), new Button()},
         propertyChanged: (bindable, oldVal, newVal) => {

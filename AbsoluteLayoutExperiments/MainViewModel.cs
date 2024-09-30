@@ -15,7 +15,13 @@ namespace AbsoluteLayoutExperiments
     {
 
         [ObservableProperty]
-        LugButton? selectedButton = null;
+        LugButton? nextButton = null;
+
+        partial void OnNextButtonChanged(LugButton? oldValue, LugButton? newValue)
+        {
+            //oldValue?.StopRotationAnimation();
+            //newValue?.StartRotationAnimation();
+        }
 
         [ObservableProperty]
         ObservableCollection<LugButton> buttons;
@@ -42,16 +48,18 @@ namespace AbsoluteLayoutExperiments
             try
             {
                 Debug.WriteLine("you clicked " + button.Text);
-                SelectedButton = button.NextLug;
-                if (SelectedButton != null)
+                NextButton = button.NextLug;
+                if (NextButton == null)
                 {
-                    SelectedButton.BackgroundColor = Colors.Red;
+                    NextButton = Buttons[0];
                 }
+                NextButton.IsSelected = true;
+
                 foreach (var btn in Buttons)
                 {
-                    if(btn != SelectedButton)
+                    if (btn != NextButton)
                     {
-                        btn.BackgroundColor = Colors.Green;
+                        btn.IsSelected = false;
                     }
                 }
             }
@@ -73,16 +81,14 @@ namespace AbsoluteLayoutExperiments
         public MainViewModel()
         {
 
-            LugButton four = new LugButton() { Text = "congrats", BackgroundColor = Colors.Green };
-            LugButton three = new LugButton() { Text = "congrats", NextLug = four, BackgroundColor = Colors.Green };
-            LugButton two = new LugButton() { Text = "congrats", NextLug = three, BackgroundColor = Colors.Green };
-            LugButton one = new LugButton() { Text = "congrats", NextLug = two, BackgroundColor = Colors.Green };
+            LugButton four = new LugButton() { Text = "four" };
+            LugButton three = new LugButton() { Text = "three", NextLug = four };
+            LugButton two = new LugButton() { Text = "two", NextLug = three, };
+            LugButton one = new LugButton() { Text = "one", NextLug = two, IsSelected = true };
             Buttons = new ObservableCollection<LugButton>()
             {
                 one, two, three, four
             };
-            SelectedButton = one;
-            SelectedButton.BackgroundColor = Colors.Red;
         }
     }
 }

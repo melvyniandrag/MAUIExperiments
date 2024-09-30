@@ -57,7 +57,7 @@ public partial class CircleLayout : AbsoluteLayout
         foreach(LugButton btn in Buttons)
         {
             this.Add(btn);
-            this.SetLayoutBounds(btn, new Microsoft.Maui.Graphics.Rect(x, 2, 200, 60));
+            this.SetLayoutBounds(btn, new Microsoft.Maui.Graphics.Rect(x, 2, 100, 100));
             x += 220;
         }
     }

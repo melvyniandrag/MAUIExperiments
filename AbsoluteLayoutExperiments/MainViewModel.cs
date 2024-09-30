@@ -13,13 +13,12 @@ namespace AbsoluteLayoutExperiments
 {
     public partial class MainViewModel : ObservableObject
     {
+
         [ObservableProperty]
-        ObservableCollection<Button> buttons =
-        [
-            new Button(){ Text="congrats"},
-            new Button(){ Text="you did it"},
-            new Button()
-        ];
+        LugButton? selectedButton = null;
+
+        [ObservableProperty]
+        ObservableCollection<LugButton> buttons;
 
         [ObservableProperty]
         string myText = "hello";
@@ -29,7 +28,7 @@ namespace AbsoluteLayoutExperiments
         {
             try
             {
-                Debug.WriteLine("you clicked " + ((Button)sender).Text);
+                Debug.WriteLine("you clicked " + ((LugButton)sender).Text);
             }
             catch (Exception ex)
             {
@@ -38,11 +37,23 @@ namespace AbsoluteLayoutExperiments
         }
 
         [RelayCommand]
-        void OnButtonClicked(Button button)
+        void OnButtonClicked(LugButton button)
         {
             try
             {
                 Debug.WriteLine("you clicked " + button.Text);
+                SelectedButton = button.NextLug;
+                if (SelectedButton != null)
+                {
+                    SelectedButton.BackgroundColor = Colors.Red;
+                }
+                foreach (var btn in Buttons)
+                {
+                    if(btn != SelectedButton)
+                    {
+                        btn.BackgroundColor = Colors.Green;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -57,6 +68,21 @@ namespace AbsoluteLayoutExperiments
             {
                 button.BackgroundColor = Colors.Orange;
             }
+        }
+
+        public MainViewModel()
+        {
+
+            LugButton four = new LugButton() { Text = "congrats", BackgroundColor = Colors.Green };
+            LugButton three = new LugButton() { Text = "congrats", NextLug = four, BackgroundColor = Colors.Green };
+            LugButton two = new LugButton() { Text = "congrats", NextLug = three, BackgroundColor = Colors.Green };
+            LugButton one = new LugButton() { Text = "congrats", NextLug = two, BackgroundColor = Colors.Green };
+            Buttons = new ObservableCollection<LugButton>()
+            {
+                one, two, three, four
+            };
+            SelectedButton = one;
+            SelectedButton.BackgroundColor = Colors.Red;
         }
     }
 }

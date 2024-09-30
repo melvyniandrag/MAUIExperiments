@@ -6,9 +6,9 @@ namespace AbsoluteLayoutExperiments;
 public partial class CircleLayout : AbsoluteLayout
 {
     public static readonly BindableProperty ButtonsProperty =
-    BindableProperty.Create(nameof(Buttons), typeof(ObservableCollection<Button>), typeof(Button), new ObservableCollection<Button>(){new Button(), new Button(), new Button()},
+    BindableProperty.Create(nameof(Buttons), typeof(ObservableCollection<LugButton>), typeof(LugButton), new ObservableCollection<LugButton>(){new LugButton(), new LugButton(), new LugButton()},
         propertyChanged: (bindable, oldVal, newVal) => {
-            foreach(var button in (ObservableCollection<Button>)newVal)
+            foreach(var button in (ObservableCollection<LugButton>)newVal)
             {
                 button.Command = ((CircleLayout)bindable).ButtonClickedCommand;
                 button.CommandParameter = button;
@@ -16,11 +16,11 @@ public partial class CircleLayout : AbsoluteLayout
             ((CircleLayout)bindable).DrawACircle();  
         });
 
-    public ObservableCollection<Button> Buttons
+    public ObservableCollection<LugButton> Buttons
     {
         get
         {
-            return (ObservableCollection<Button>)GetValue(ButtonsProperty);
+            return (ObservableCollection<LugButton>)GetValue(ButtonsProperty);
         }
         set
         {
@@ -54,7 +54,7 @@ public partial class CircleLayout : AbsoluteLayout
     {
         this.Clear();
         double x = 1;
-        foreach(Button btn in Buttons)
+        foreach(LugButton btn in Buttons)
         {
             this.Add(btn);
             this.SetLayoutBounds(btn, new Microsoft.Maui.Graphics.Rect(x, 2, 200, 60));

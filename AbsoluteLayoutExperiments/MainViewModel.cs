@@ -81,13 +81,16 @@ namespace AbsoluteLayoutExperiments
         public MainViewModel()
         {
 
-            LugButton four = new LugButton() { Text = "four" };
+            LugButton seven = new LugButton() { Text = "seven" };
+            LugButton six = new LugButton() { Text = "six", NextLug = seven };
+            LugButton five = new LugButton() { Text = "five", NextLug = six };
+            LugButton four = new LugButton() { Text = "four", NextLug = five };
             LugButton three = new LugButton() { Text = "three", NextLug = four };
             LugButton two = new LugButton() { Text = "two", NextLug = three, };
             LugButton one = new LugButton() { Text = "one", NextLug = two, IsSelected = true };
             Buttons = new ObservableCollection<LugButton>()
             {
-                one, two, three, four
+                one, four, two, six,three,five, seven
             };
         }
     }

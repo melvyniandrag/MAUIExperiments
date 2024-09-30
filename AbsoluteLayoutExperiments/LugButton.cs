@@ -105,7 +105,9 @@ namespace AbsoluteLayoutExperiments
             BackgroundColor = Colors.Transparent;
             Padding = 0;
             BorderWidth = 0;
+            FontSize = 30;
             ImageSource = "lug_deselected.png";
+            ContentLayout = new ButtonContentLayout(ButtonContentLayout.ImagePosition.Top, 0);
         }
 
     }

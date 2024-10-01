@@ -15,13 +15,10 @@ namespace AbsoluteLayoutExperiments
     {
 
         [ObservableProperty]
-        LugButton? nextButton = null;
-
-        partial void OnNextButtonChanged(LugButton? oldValue, LugButton? newValue)
-        {
-            //oldValue?.StopRotationAnimation();
-            //newValue?.StartRotationAnimation();
-        }
+        LugButton? redoLug = null;
+        
+        [ObservableProperty]
+        LugButton? currentLug = null;
 
         [ObservableProperty]
         ObservableCollection<LugButton> buttons;
@@ -45,27 +42,82 @@ namespace AbsoluteLayoutExperiments
         [RelayCommand]
         void OnButtonClicked(LugButton button)
         {
-            try
-            {
-                Debug.WriteLine("you clicked " + button.Text);
-                NextButton = button.NextLug;
-                if (NextButton == null)
-                {
-                    NextButton = Buttons[0];
-                }
-                NextButton.IsSelected = true;
+            // This will trigger a REDO
 
-                foreach (var btn in Buttons)
+            // Case1, we are in redo already and you click a different lug. 
+            // if that lug can be redone, set the current redo lug to skipped and go to the other lug.
+            if ((RedoLug != null) && (button != RedoLug))
+            {
+                if (button == CurrentLug)
                 {
-                    if (btn != NextButton)
+                    if (RedoLug.Status == LugButton.LugStatus.CURRENT_DO_OVER)
                     {
-                        btn.IsSelected = false;
+                        RedoLug.Status = LugButton.LugStatus.FAILED;
+
                     }
+                    else
+                    {
+                        RedoLug.Status = LugButton.LugStatus.SKIPPED;
+                    }
+                    RedoLug = null;
+                    CurrentLug.Status = LugButton.LugStatus.CURRENT;
+                    return;
+                }
+                else if (button.Status == LugButton.LugStatus.FAILED)
+                {
+                    if (RedoLug.Status == LugButton.LugStatus.CURRENT_DO_OVER)
+                    {
+                        RedoLug.Status = LugButton.LugStatus.FAILED;
+
+                    }
+                    else
+                    {
+                        RedoLug.Status = LugButton.LugStatus.SKIPPED;
+                    }
+                    RedoLug = button;
+                    RedoLug.Status = LugButton.LugStatus.CURRENT_DO_OVER;
+                }
+                else if (button.Status == LugButton.LugStatus.SKIPPED)
+                {
+                    if (RedoLug.Status == LugButton.LugStatus.CURRENT_DO_OVER)
+                    {
+                        RedoLug.Status = LugButton.LugStatus.FAILED;
+
+                    }
+                    else
+                    {
+                        RedoLug.Status = LugButton.LugStatus.SKIPPED;
+                    }
+                    RedoLug = button;
+                    RedoLug.Status = LugButton.LugStatus.CURRENT;
                 }
             }
-            catch (Exception ex)
+            else if (button.Status == LugButton.LugStatus.SKIPPED)
             {
-                Debug.WriteLine(ex.Message);
+                RedoLug = button;
+                RedoLug.Status = LugButton.LugStatus.CURRENT;
+                if (CurrentLug != null)
+                {
+                    CurrentLug.Status = LugButton.LugStatus.PAUSED;
+                }
+            }
+            else if (button.Status == LugButton.LugStatus.FAILED)
+            {
+                RedoLug = button;
+                RedoLug.Status = LugButton.LugStatus.CURRENT_DO_OVER;
+                if (CurrentLug != null)
+                {
+                    CurrentLug.Status = LugButton.LugStatus.PAUSED;
+                }
+            }
+            else if (button.Status == LugButton.LugStatus.SUCCESS)
+            {
+                RedoLug = button;
+                RedoLug.Status = LugButton.LugStatus.CURRENT;
+                if (CurrentLug != null)
+                {
+                    CurrentLug.Status = LugButton.LugStatus.PAUSED;
+                }
             }
         }
 
@@ -78,20 +130,118 @@ namespace AbsoluteLayoutExperiments
             }
         }
 
-        public MainViewModel()
+        [RelayCommand]
+        void OnSkipClicked()
         {
+            if(RedoLug != null)
+            {
+                if(RedoLug.Status == LugButton.LugStatus.CURRENT_DO_OVER)
+                {
+                    RedoLug.Status = LugButton.LugStatus.FAILED;
 
+                }
+                else
+                {
+                    RedoLug.Status = LugButton.LugStatus.SKIPPED;
+                }
+                RedoLug = null;
+                if(CurrentLug != null)
+                {
+                    CurrentLug.Status = LugButton.LugStatus.CURRENT;
+                }
+            }
+            else if (CurrentLug == null)
+            {
+                ResetButtons();
+            }
+            else
+            {
+                if (CurrentLug.Status == LugButton.LugStatus.CURRENT_DO_OVER)
+                {
+                    CurrentLug.Status = LugButton.LugStatus.FAILED;
+
+                }
+                else
+                {
+                    CurrentLug.Status = LugButton.LugStatus.SKIPPED;
+                }
+                CurrentLug = CurrentLug?.NextLug ?? null;
+                if (CurrentLug != null)
+                {
+                    CurrentLug.Status = LugButton.LugStatus.CURRENT;
+                }
+            }
+        }
+
+        [RelayCommand]
+        void OnSuccessClicked()
+        {
+            if (RedoLug != null)
+            {
+                RedoLug.Status = LugButton.LugStatus.SUCCESS;
+                RedoLug = null;
+                if (CurrentLug != null)
+                {
+                    CurrentLug.Status = LugButton.LugStatus.CURRENT;
+                }
+            }
+            else
+            {
+                if (CurrentLug == null)
+                {
+                    ResetButtons();
+                }
+                else
+                {
+                    CurrentLug.Status = LugButton.LugStatus.SUCCESS;
+                    CurrentLug = CurrentLug?.NextLug ?? null;
+                    if (CurrentLug != null)
+                    {
+                        CurrentLug.Status = LugButton.LugStatus.CURRENT;
+                    }
+                }
+            }
+        }
+
+        [RelayCommand]
+        void OnFailClicked()
+        {
+            if (RedoLug != null)
+            {
+                RedoLug.Status = LugButton.LugStatus.CURRENT_DO_OVER;
+            }
+            else
+            {
+                if (CurrentLug == null)
+                {
+                    ResetButtons();
+                }
+                else
+                {
+                    CurrentLug.Status = LugButton.LugStatus.CURRENT_DO_OVER;
+                }
+            }
+        }
+
+        void ResetButtons()
+        {
             LugButton seven = new LugButton() { Text = "seven" };
             LugButton six = new LugButton() { Text = "six", NextLug = seven };
             LugButton five = new LugButton() { Text = "five", NextLug = six };
             LugButton four = new LugButton() { Text = "four", NextLug = five };
             LugButton three = new LugButton() { Text = "three", NextLug = four };
             LugButton two = new LugButton() { Text = "two", NextLug = three, };
-            LugButton one = new LugButton() { Text = "one", NextLug = two, IsSelected = true };
+            LugButton one = new LugButton() { Text = "one", NextLug = two, Status = LugButton.LugStatus.CURRENT };
             Buttons = new ObservableCollection<LugButton>()
             {
                 one, four, two, six,three,five, seven
             };
+            CurrentLug = Buttons[0];
+        }
+
+        public MainViewModel()
+        {
+            ResetButtons();
         }
     }
 }

@@ -62,8 +62,13 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <None Remove="Resources\Images\lug_deselected.svg" />
-	  <None Remove="Resources\Images\lug_selected.svg" />
+	  <None Remove="Resources\Images\lug_current.svg" />
+	  <None Remove="Resources\Images\lug_current_do_over.svg" />
+	  <None Remove="Resources\Images\lug_failed.svg" />
+	  <None Remove="Resources\Images\lug_paused.svg" />
+	  <None Remove="Resources\Images\lug_skipped.svg" />
+	  <None Remove="Resources\Images\lug_success.svg" />
+	  <None Remove="Resources\Images\lug_todo.svg" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -28,46 +28,79 @@ namespace AbsoluteLayoutExperiments
             }
         }
 
-        public static readonly BindableProperty IsSelectedProperty =
-            BindableProperty.Create(nameof(IsSelected), typeof(bool), typeof(LugButton), false,
+        public enum LugStatus
+        {
+            TODO,
+            CURRENT,
+            CURRENT_DO_OVER,
+            SKIPPED,
+            SUCCESS,
+            PAUSED,
+            FAILED
+        }
+
+        public static readonly BindableProperty StatusProperty =
+            BindableProperty.Create(nameof(Status), typeof(LugStatus), typeof(LugButton), LugStatus.TODO,
              propertyChanged: (bindable, oldVal, newVal) =>
              {
-                 if((bool)newVal)
+                 LugButton thisButton = (LugButton)bindable;
+                 switch ((LugStatus)newVal)
                  {
-                     ((LugButton)bindable).StartRotationAnimation();
-                     if (App.Current?.RequestedTheme == AppTheme.Dark)
-                     {
-                         ((LugButton)bindable).ImageSource = "lug_selected.png";
-                     }
-                     else
-                     {
-                         ((LugButton)bindable).ImageSource = "lug_selected.png";
-                     }
-                 }
-                 else 
-                 {
-                     ((LugButton)bindable).StopRotationAnimation();
+                     case (LugStatus.TODO):
+                         {
+                             thisButton.StopRotationAnimation();
+                             thisButton.ImageSource = "lug_todo.png";
+                             break;
+                         }
+                     case (LugStatus.CURRENT):
+                         {
+                             thisButton.StartRotationAnimation();
+                             thisButton.ImageSource = "lug_current.png";
+                             break;
+                         }
+                     case (LugStatus.CURRENT_DO_OVER):
+                         {
+                             thisButton.StartRotationAnimation();
+                             thisButton.ImageSource = "lug_current_do_over.png";
+                             break;
+                         }
+                     case (LugStatus.PAUSED):
+                         {
+                             thisButton.StopRotationAnimation();
+                             ((LugButton)bindable).ImageSource = "lug_paused.png";
+                             break;
+                         }
+                     case (LugStatus.SUCCESS):
+                         {
+                             thisButton.StopRotationAnimation();
+                             ((LugButton)bindable).ImageSource = "lug_success.png";
+                             break;
+                         }
+                     case (LugStatus.SKIPPED):
+                         {
+                             thisButton.StopRotationAnimation();
+                             ((LugButton)bindable).ImageSource = "lug_skipped.png";
+                             break;
+                         }
+                     case (LugStatus.FAILED):
+                         {
+                             thisButton.StopRotationAnimation();
+                             thisButton.ImageSource = "lug_failed.png";
+                             break;
+                         }
 
-                     if (App.Current?.RequestedTheme == AppTheme.Dark)
-                     {
-                         ((LugButton)bindable).ImageSource = "lug_deselected.png";
-                     }
-                     else
-                     {
-                         ((LugButton)bindable).ImageSource = "lug_deselected.png";
-                     }
                  }
              });
 
-        public bool IsSelected
+        public LugStatus Status
         {
             get
             {
-                return (bool)GetValue(IsSelectedProperty);
+                return (LugStatus)GetValue(StatusProperty);
             }
             set
             {
-                SetValue(IsSelectedProperty, value);
+                SetValue(StatusProperty, value);
             }
         }
 
@@ -79,6 +112,7 @@ namespace AbsoluteLayoutExperiments
         {
             // Cancel any existing animation before starting a new one
             _animationCancellationTokenSource?.Cancel();
+            await Task.Delay(100);
 
             // Create a new cancellation token source for the new animation
             _animationCancellationTokenSource = new CancellationTokenSource();
@@ -106,7 +140,7 @@ namespace AbsoluteLayoutExperiments
             Padding = 0;
             BorderWidth = 0;
             FontSize = 30;
-            ImageSource = "lug_deselected.png";
+            ImageSource = "lug_todo.png";
             ContentLayout = new ButtonContentLayout(ButtonContentLayout.ImagePosition.Top, 0);
         }
 
